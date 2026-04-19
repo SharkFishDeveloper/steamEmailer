@@ -1,8 +1,7 @@
-import { jsonResponse } from "@/lib/cors";
 import { redis } from "@/lib/redis";
 import { fetchCurrentPrice } from "@/lib/steam";
 import { Game, PriceData } from "@/types";
-import { NextRequest } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(
   _req: NextRequest,
@@ -11,10 +10,17 @@ export async function GET(
   const { id } = await params;
 
   const game = await redis.get<Game>(`game:${id}`);
-  if (!game) return jsonResponse({ error: "Game not found" }, 404);
+  if (!game) {
+    return NextResponse.json({ error: "Game not found" }, { status: 404 });
+  }
 
   const priceData = await fetchCurrentPrice(game);
-  if (!priceData) return jsonResponse({ error: "Price fetch failed" }, 400);
+  if (!priceData) {
+    return NextResponse.json(
+      { error: "Price fetch failed" },
+      { status: 400 }
+    );
+  }
 
   const raw = await redis.zrange<{ member: string; score: number }[]>(
     `price_history:${id}`,
@@ -34,7 +40,7 @@ export async function GET(
       ? Math.min(...parsed.map((p) => p.price))
       : priceData.price;
 
-  return jsonResponse({
+  return NextResponse.json({
     ...game,
     currentPrice: priceData.price,
     discount: priceData.discount,

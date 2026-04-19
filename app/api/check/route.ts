@@ -1,13 +1,10 @@
-import { handleOptions, jsonResponse } from "@/lib/cors";
 import { redis } from "@/lib/redis";
 import { fetchCurrentPrice } from "@/lib/steam";
 import { storePriceHistory } from "@/lib/storePriceHistory";
 import { sendEmail } from "@/lib/sendEmail";
 import { AlertItem, AlertReason, EmailGame, Game } from "@/types";
+import { NextResponse } from "next/server";
 
-export async function OPTIONS() {
-  return handleOptions();
-}
 
 const EMAIL_COOLDOWN_MS = 5 * 24 * 60 * 60 * 1000; // 5 days
 
@@ -18,7 +15,7 @@ export async function GET() {
   ).filter(Boolean) as Game[];
 
   if (games.length === 0) {
-    return jsonResponse({ checked: 0, alerts: [] });
+    return NextResponse.json({ checked: 0, alerts: [] });
   }
 
   const RESEND_API_KEY = process.env.RESEND_API_KEY!;
@@ -84,7 +81,7 @@ export async function GET() {
     }
   }
 
-  return jsonResponse({
+  return NextResponse.json({
     checked: games.length,
     alerts: alerts.map((a) => ({
       id: a.game.id,

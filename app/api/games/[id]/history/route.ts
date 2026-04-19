@@ -1,10 +1,8 @@
-import { NextRequest } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { redis } from "@/lib/redis";
-import { handleOptions, jsonResponse } from "@/lib/cors";
 import { PriceData, PriceHistoryEntry } from "@/types";
 
 export async function OPTIONS() {
-  return handleOptions();
 }
 export async function GET(
   _req: NextRequest,
@@ -31,5 +29,5 @@ export async function GET(
     };
   });
 
-  return jsonResponse(formatted);
+  return NextResponse.json(formatted);
 }
