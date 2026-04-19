@@ -1,18 +1,14 @@
-import { NextRequest } from "next/server";
+import { jsonResponse } from "@/lib/cors";
 import { redis } from "@/lib/redis";
 import { fetchCurrentPrice } from "@/lib/steam";
-import { handleOptions, jsonResponse } from "@/lib/cors";
 import { Game, PriceData } from "@/types";
-
-export async function OPTIONS() {
-  return handleOptions();
-}
+import { NextRequest } from "next/server";
 
 export async function GET(
   _req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
-  const { id } = params;
+  const { id } = await params;
 
   const game = await redis.get<Game>(`game:${id}`);
   if (!game) return jsonResponse({ error: "Game not found" }, 404);
@@ -20,13 +16,17 @@ export async function GET(
   const priceData = await fetchCurrentPrice(game);
   if (!priceData) return jsonResponse({ error: "Price fetch failed" }, 400);
 
-  const raw = await redis.zrange<string[]>(`price_history:${id}`, 0, -1, {
-    withScores: true,
-  });
+  const raw = await redis.zrange<{ member: string; score: number }[]>(
+    `price_history:${id}`,
+    0,
+    -1,
+    { withScores: true }
+  );
 
   const parsed: PriceData[] = raw.map((entry) => {
-    const member = (entry as any).member ?? entry;
-    return typeof member === "string" ? JSON.parse(member) : member;
+    return typeof entry.member === "string"
+      ? JSON.parse(entry.member)
+      : entry.member;
   });
 
   const lowest =

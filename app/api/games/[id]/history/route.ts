@@ -6,24 +6,28 @@ import { PriceData, PriceHistoryEntry } from "@/types";
 export async function OPTIONS() {
   return handleOptions();
 }
-
 export async function GET(
   _req: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
 ) {
-  const { id } = params;
+  const { id } = await context.params;
 
-  const raw = await redis.zrange<string[]>(`price_history:${id}`, 0, -1, {
-    withScores: true,
-  });
+  const raw = await redis.zrange<{ member: string; score: number }[]>(
+    `price_history:${id}`,
+    0,
+    -1,
+    { withScores: true }
+  );
 
   const formatted: PriceHistoryEntry[] = raw.map((entry) => {
-    const member = (entry as any).member ?? entry;
     const { t, ...rest }: PriceData & { t?: number } =
-      typeof member === "string" ? JSON.parse(member) : member;
+      typeof entry.member === "string"
+        ? JSON.parse(entry.member)
+        : entry.member;
+
     return {
       ...rest,
-      time: Number((entry as any).score ?? t),
+      time: Number(entry.score ?? t),
     };
   });
 

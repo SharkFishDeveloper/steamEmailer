@@ -32,6 +32,7 @@ export default function TrackerClient() {
   }, []);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchGames();
   }, [fetchGames]);
 
