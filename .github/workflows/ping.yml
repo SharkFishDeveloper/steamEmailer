@@ -13,7 +13,7 @@ jobs:
     steps:
       - name: Ping API with retries
         run: |
-          URL="https://steam-emailer.vercel.app/api/games"  # 
+          URL="https://steam-emailer.vercel.app/api/check"  # 
 
           MAX_RETRIES=5
           COUNT=0
