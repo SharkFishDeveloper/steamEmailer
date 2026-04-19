@@ -54,7 +54,7 @@ export async function sendEmail(
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        from: "Steam Tracker <onboarding@resend.dev>",
+        from: "steamtracker@codeheroes.store",
         to: [toEmail],
         subject: `🎮 Steam Price Alert — ${games.length} game(s) on sale`,
         html,
