@@ -47,21 +47,27 @@ export async function sendEmail(
       </table>
     `;
 
-    const res = await fetch("https://api.resend.com/emails", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${apiKey}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        from: "steamtracker@codeheroes.store",
-        to: [toEmail],
-        subject: `🎮 Steam Price Alert — ${games.length} game(s) on sale`,
-        html,
-      }),
-    });
+   const res = await fetch("https://api.resend.com/emails", {
+  method: "POST",
+  headers: {
+    Authorization: `Bearer ${apiKey}`,
+    "Content-Type": "application/json",
+  },
+  body: JSON.stringify({
+    from: "steamtracker@codeheroes.store",
+    to: [toEmail],
+    subject: `🎮 Steam Price Alert — ${games.length} game(s) on sale`,
+    html,
+  }),
+});
 
-    return res.ok;
+const data = await res.json();
+
+if (!res.ok) {
+  console.error("❌ RESEND ERROR:", data); // 🔥 THIS WILL SHOW REAL ISSUE
+}
+
+return res.ok;
   } catch (err) {
     console.error("Email send error:", err);
     return false;
