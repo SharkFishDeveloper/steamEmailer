@@ -29,7 +29,6 @@ export default function PriceChart({
     const id = setTimeout(() => setReady(true), 0);
     return () => clearTimeout(id);
   }, []);
-
   if (!ready || !history || history.length === 0) {
     return (
       <div className="flex items-center justify-center h-40 text-[#8ba3b8] text-sm">

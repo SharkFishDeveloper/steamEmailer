@@ -52,7 +52,25 @@ export default function GameCard({ game, onDelete }: GameCardProps) {
         fetch(`/api/games/${game.id}/history`),
       ]);
 
-      if (!resGame.ok) throw new Error("Failed to load game data");
+      if (!resGame.ok) {
+  const text = await resGame.text(); // or .json() if you're sure
+  console.log("❌ Game API failed:", {
+    status: resGame.status,
+    statusText: resGame.statusText,
+    body: text,
+  });
+  throw new Error("Failed to load game data");
+}
+
+if (!resHistory.ok) {
+  const text = await resHistory.text();
+  console.log("❌ History API failed:", {
+    status: resHistory.status,
+    statusText: resHistory.statusText,
+    body: text,
+  });
+  throw new Error("Failed to load history data");
+}
 
       const gameData: GameDetails = await resGame.json();
       const histData: HistoryEntry[] = await resHistory.json();
