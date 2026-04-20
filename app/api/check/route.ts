@@ -72,8 +72,11 @@ export async function GET() {
       reasons: a.reasons,
     }));
 
+    console.log("📧 Sending email with payload:", emailPayload);
     const sent = await sendEmail(emailPayload, RESEND_API_KEY, ALERT_EMAIL);
+    console.log("📬 Email sent status:", sent);
 
+    
     if (sent) {
       await Promise.all(
         alerts.map((a) => redis.set(`last_email_sent:${a.game.id}`, now))
