@@ -15,7 +15,6 @@ export async function GET(
     { withScores: true }
   );
 
-  console.log("🟥 RAW HISTORY:", raw);
 
   const formatted: PriceHistoryEntry[] = [];
 
@@ -34,7 +33,6 @@ export async function GET(
     });
   }
 
-  console.log("🟩 FORMATTED HISTORY:", formatted);
 
   return NextResponse.json(formatted);
 }

@@ -16,6 +16,7 @@ export interface Game {
   name: string;
   type: "app" | "sub";
   targetPrice: number;
+  imageUrl?: string | null;
 }
 
 export interface PriceData {

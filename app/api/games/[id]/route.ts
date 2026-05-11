@@ -89,7 +89,6 @@ export async function GET(
     });
   }
 
-  console.log("🟩 PARSED HISTORY:", parsed);
 
   /* =========================
      Compute lowest price
@@ -110,7 +109,6 @@ export async function GET(
     history: parsed, // 🔥 THIS FIXES YOUR FRONTEND
   };
 
-  console.log("📦 RESPONSE:", response);
 
   return NextResponse.json(response);
 }
